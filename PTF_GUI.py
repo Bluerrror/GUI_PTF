@@ -36,6 +36,9 @@ def compute_bic(n, rss, k):
 # ===============================================================
 # Progress wrapper with Streamlit
 # ===============================================================
+# ===============================================================
+# Persistent Progress Wrapper (does not vanish)
+# ===============================================================
 class FuncWithStreamlitProgress:
     def __init__(self, func, h_vals, theta_obs, maxfev=5000, desc="curve_fit"):
         self.func = func
@@ -44,21 +47,32 @@ class FuncWithStreamlitProgress:
         self.ncalls = 0
         self.maxfev = maxfev
         self.desc = desc
-        self.progress_bar = st.progress(0)
-        self.status_text = st.empty()
-    
+
+        # Persistent elements (don't vanish)
+        if "progress_bar" not in st.session_state:
+            st.session_state["progress_bar"] = st.progress(0)
+        if "status_text" not in st.session_state:
+            st.session_state["status_text"] = st.empty()
+
+        # Reset progress for each new fitting
+        st.session_state["progress_bar"].progress(0)
+        st.session_state["status_text"].text(f"{self.desc} | Starting fitting...")
+
     def __call__(self, h, *params):
         self.ncalls += 1
         pred = self.func(h, *params)
         rmse_val = RMSE(self.theta_obs, pred)
         frac = min(self.ncalls / self.maxfev, 1.0)
-        self.progress_bar.progress(frac)
-        self.status_text.text(f"{self.desc} | Eval {self.ncalls}/{self.maxfev} | RMSE={rmse_val:.6f}")
+        st.session_state["progress_bar"].progress(frac)
+        st.session_state["status_text"].text(
+            f"{self.desc} | Eval {self.ncalls}/{self.maxfev} | RMSE={rmse_val:.6f}"
+        )
         return pred
-    
+
     def close(self):
-        self.progress_bar.empty()
-        self.status_text.empty()
+        # Keep progress bar visible after completion
+        st.session_state["progress_bar"].progress(1.0)
+        st.session_state["status_text"].text(f"{self.desc} | Completed ✅")
 
 # ===============================================================
 # Define Models
