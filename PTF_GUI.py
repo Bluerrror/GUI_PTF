@@ -200,8 +200,8 @@ if uploaded_file is not None:
     if "Brunswick" in model_options:
         st.subheader("Brunswick")
         Brunswick_progress = FuncWithStreamlitProgress(Brunswick_curve, h, theta_v, maxfev=10000, desc="Brunswick fitting")
-        p0_Brunswick = [0.01, 0.05, 1.5, 0.4, 0.1, 5.0]
-        bounds_Brunswick = ([1e-5,0.0,1.01,0.1,0.0,4.0],[1.0,0.4,15.0,1.0,0.5,7.0])
+        p0_Brunswick = [0.01, 0.05, 1.5, 0.4, 0.1, 6.79]
+        bounds_Brunswick = ([1e-5,0.0,1.01,0.1,0.0,4.0],[1.0,0.4,15.0,1.0,0.5,6.81])
         popt_Brunswick, _ = curve_fit(Brunswick_progress, h, theta_v, p0=p0_Brunswick, bounds=bounds_Brunswick, maxfev=10000)
         Brunswick_progress.close()
         theta_Brunswick_pred = Brunswick_curve(h, *popt_Brunswick)
@@ -210,8 +210,8 @@ if uploaded_file is not None:
     if "PDI" in model_options:
         st.subheader("PDI")
         PDI_progress = FuncWithStreamlitProgress(PDI_curve, h, theta_v, maxfev=10000, desc="PDI fitting")
-        p0_PDI = [0.01, 0.05, 1.5, 0.4, 5.0]
-        bounds_PDI = ([1e-5,0.0,1.01,0,4.0],[1.0,0.4,15.0,0.8,7.0])
+        p0_PDI = [0.01, 0.05, 1.5, 0.4, 6.79]
+        bounds_PDI = ([1e-5,0.0,1.01,0,4.0],[1.0,0.4,15.0,0.8,6.81])
         popt_PDI, _ = curve_fit(PDI_progress, h, theta_v, p0=p0_PDI, bounds=bounds_PDI, maxfev=10000)
         PDI_progress.close()
         theta_PDI_pred = PDI_curve(h, *popt_PDI)
@@ -269,3 +269,4 @@ if uploaded_file is not None:
     ax.grid(True, which='both', ls='--', alpha=0.4)
     ax.legend()
     st.pyplot(fig)
+
